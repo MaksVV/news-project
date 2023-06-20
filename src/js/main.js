@@ -1,4 +1,6 @@
-import { fetchNews } from "./fetchNews";
+// import { fetchNews } from "./fetchNews";
+const url = `https://api.spaceflightnewsapi.net/v4/articles/?format=json&title_contains=${searchQuery}&limit=30`;
+  
 let main = document.querySelector(".js-main");
 let btnLoad = document.querySelector(".js-btn-load");
 let btnSearch = document.querySelector(".js-btn-search");
@@ -6,6 +8,11 @@ let btnClear = document.querySelector(".js-btn-clear");
 let searchInput = document.querySelector(".js-search-input");
 let loadMoreUrl = "";
 let searchQuery = "";
+
+function fetchNews() {
+  return fetch(url).then(response => response.json())
+  .catch(error => console.log(error))
+}
 
 function onLoadMoreClick() {
   fetchNews(loadMoreUrl).then((data) => {
@@ -36,7 +43,6 @@ function setLoadMoreUrl(next) {
 
 //
 function searchNews() {
-  const keyword = searchInput.value.trim();
 
   if (keyword === "") {
     searchQuery = "";
@@ -44,7 +50,7 @@ function searchNews() {
     return;
   }
 
-  searchQuery = `&title_contains=${encodeURIComponent(keyword)}`;
+  searchQuery = searchInput.value.trim();;
   showNews();
 }
 

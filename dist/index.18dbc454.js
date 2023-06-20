@@ -574,7 +574,8 @@ function hmrAccept(bundle /*: ParcelRequire */ , id /*: string */ ) {
 }
 
 },{}],"1SICI":[function(require,module,exports) {
-var _fetchNews = require("./fetchNews");
+// import { fetchNews } from "./fetchNews";
+const url = `https://api.spaceflightnewsapi.net/v4/articles/?format=json&title_contains=${searchQuery}&limit=30`;
 let main = document.querySelector(".js-main");
 let btnLoad = document.querySelector(".js-btn-load");
 let btnSearch = document.querySelector(".js-btn-search");
@@ -582,8 +583,11 @@ let btnClear = document.querySelector(".js-btn-clear");
 let searchInput = document.querySelector(".js-search-input");
 let loadMoreUrl = "";
 let searchQuery = "";
+function fetchNews() {
+    return fetch(url).then((response)=>response.json()).catch((error)=>console.log(error));
+}
 function onLoadMoreClick() {
-    (0, _fetchNews.fetchNews)(loadMoreUrl).then((data)=>{
+    fetchNews(loadMoreUrl).then((data)=>{
         let newsHTML = "";
         data.results.forEach((result)=>{
             newsHTML += getArticleHTML(result.image_url, result.title, result.id);
@@ -593,7 +597,7 @@ function onLoadMoreClick() {
     });
 }
 function showNews() {
-    (0, _fetchNews.fetchNews)().then((data)=>{
+    fetchNews().then((data)=>{
         let newsHTML = "";
         data.results.forEach((result)=>{
             newsHTML += getArticleHTML(result.image_url, result.title, result.id);
@@ -608,13 +612,12 @@ function setLoadMoreUrl(next) {
 }
 //
 function searchNews() {
-    const keyword = searchInput.value.trim();
     if (keyword === "") {
         searchQuery = "";
         showNews();
         return;
     }
-    searchQuery = `&title_contains=${encodeURIComponent(keyword)}`;
+    searchQuery = searchInput.value.trim();
     showNews();
 }
 function clearSearchResults() {
@@ -639,47 +642,6 @@ showNews();
 btnLoad.addEventListener("click", onLoadMoreClick);
 btnSearch.addEventListener("click", searchNews);
 btnClear.addEventListener("click", clearSearchResults);
-
-},{"./fetchNews":"7gAGm"}],"7gAGm":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "fetchNews", ()=>fetchNews) // const limit = 30;
- // const url = `${BASE_URL}/?format=json${searchQuery}&limit=${limit}`;
-;
-const BASE_URL = "https://api.spaceflightnewsapi.net/v4/articles/?format=json&limit=30";
-function fetchNews(url = BASE_URL) {
-    return fetch(url).then((response)=>response.json()).catch((error)=>console.log(error));
-}
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gkKU3":[function(require,module,exports) {
-exports.interopDefault = function(a) {
-    return a && a.__esModule ? a : {
-        default: a
-    };
-};
-exports.defineInteropFlag = function(a) {
-    Object.defineProperty(a, "__esModule", {
-        value: true
-    });
-};
-exports.exportAll = function(source, dest) {
-    Object.keys(source).forEach(function(key) {
-        if (key === "default" || key === "__esModule" || dest.hasOwnProperty(key)) return;
-        Object.defineProperty(dest, key, {
-            enumerable: true,
-            get: function() {
-                return source[key];
-            }
-        });
-    });
-    return dest;
-};
-exports.export = function(dest, destName, get) {
-    Object.defineProperty(dest, destName, {
-        enumerable: true,
-        get: get
-    });
-};
 
 },{}]},["gEwwu","1SICI"], "1SICI", "parcelRequire7b84")
 
