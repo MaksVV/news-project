@@ -7,8 +7,6 @@ const refs = {
   btnClear: document.querySelector(".js-btn-clear"),
   searchMessage: document.querySelector(".js-message"),
   searchInput: document.querySelector(".js-search-input"),
-  // btnShowThree: document.querySelector(".js-radio-three"),
-  // btnShowNine: document.querySelector(".js-radio-nine"),
   limitSelect: document.querySelector(".js-limit-select"),
 };
 
@@ -79,7 +77,7 @@ function clearSearchResults() {
   refs.searchInput.value = "";
   params.search = "";
   params.offset = 0;
-  refs.searchMessage.innerHTML = ""; // щось зробити з блоком, видалити чи!!!
+  refs.searchMessage.remove(); 
   toggleButton(refs.btnClear, false);
   showNews(false, true);
 }
@@ -102,6 +100,4 @@ showNews();
 refs.btnLoad.addEventListener("click", onLoadMoreClick);
 refs.btnSearch.addEventListener("click", onSearchNews);
 refs.btnClear.addEventListener("click", clearSearchResults);
-// refs.btnShowThree.addEventListener("click", onShowThree);
-// refs.btnShowNine.addEventListener("click", onShowNine);
 refs.limitSelect.addEventListener("change", onLimitChange);
