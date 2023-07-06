@@ -1,65 +1,88 @@
-// import { fetchNews } from "./fetchNews";
-const url = `https://api.spaceflightnewsapi.net/v4/articles/?format=json&title_contains=${searchQuery}&limit=30`;
-  
-let main = document.querySelector(".js-main");
-let btnLoad = document.querySelector(".js-btn-load");
-let btnSearch = document.querySelector(".js-btn-search");
-let btnClear = document.querySelector(".js-btn-clear");
-let searchInput = document.querySelector(".js-search-input");
-let loadMoreUrl = "";
-let searchQuery = "";
+import { fetchNews } from "./fetchNews";
 
-function fetchNews() {
-  return fetch(url).then(response => response.json())
-  .catch(error => console.log(error))
+const refs = {
+  articles: document.querySelector(".js-articles"),
+  btnSearch: document.querySelector(".js-btn-search"),
+  btnLoad: document.querySelector(".js-btn-load"),
+  btnClear: document.querySelector(".js-btn-clear"),
+  searchMessage: document.querySelector(".js-message"),
+  searchInput: document.querySelector(".js-search-input"),
+  // btnShowThree: document.querySelector(".js-radio-three"),
+  // btnShowNine: document.querySelector(".js-radio-nine"),
+  limitSelect: document.querySelector(".js-limit-select"),
+};
+
+const params = {
+  limit: 3,
+  // індекс, з якого починаємо відображення записів
+  offset: 0,
+  // параметр для пошуку, за замовчуванням пустий
+  search: "",
+};
+
+function onLimitChange() {
+  const selectedLimit = parseInt(refs.limitSelect.value, 10);
+
+  params.limit = selectedLimit;
+  params.offset = 0;
+  showNews(false, true);
 }
 
 function onLoadMoreClick() {
-  fetchNews(loadMoreUrl).then((data) => {
+  // збільшуємо індекс на кількість елементів, котрі вже були відображені
+  params.offset += params.limit;
+
+  showNews();
+}
+
+function showNews(isSearchResult = false, showNewResults = false) {
+  // передаємо в якості параметру обʼєкт params, що вказує які наступні дані брати, чи є пошуковий запит
+  fetchNews(params).then((data) => {
     let newsHTML = "";
     data.results.forEach((result) => {
       newsHTML += getArticleHTML(result.image_url, result.title, result.id);
     });
-    main.insertAdjacentHTML("beforeend", newsHTML);
-    setLoadMoreUrl(data.next);
+
+    // коли ми виконали пошук, нам необхідно відображати тільки нові результати, тому ми
+    // повністю переписуємо вміст блоку main
+    showNewResults
+      ? (refs.articles.innerHTML = newsHTML)
+      : refs.articles.insertAdjacentHTML("beforeend", newsHTML);
+
+    // ховаємо кнопку, якщо немає можливості перейти на наступну сторінку
+    toggleButton(refs.btnLoad, !!data.next);
+    if (isSearchResult) {
+      refs.searchMessage.innerHTML = `We found ${data.count} news`;
+    }
   });
 }
 
-function showNews() {
-  fetchNews().then((data) => {
-    let newsHTML = "";
-    data.results.forEach((result) => {
-      newsHTML += getArticleHTML(result.image_url, result.title, result.id);
-    });
-    main.innerHTML = newsHTML;
-    setLoadMoreUrl(data.next);
-  });
+function toggleButton(button, isButtonShown) {
+  button.style.display = isButtonShown ? "block" : "none";
 }
 
-function setLoadMoreUrl(next) {
-  loadMoreUrl = next;
-  btnLoad.style.display = next ? "block" : "none";
-}
+function onSearchNews() {
+  let searchQuery = refs.searchInput.value.trim();
 
-//
-function searchNews() {
-
-  if (keyword === "") {
-    searchQuery = "";
-    showNews();
+  if (!searchQuery) {
     return;
   }
 
-  searchQuery = searchInput.value.trim();;
-  showNews();
+  params.search = searchQuery;
+  params.offset = 0;
+
+  showNews(true, true);
+  toggleButton(refs.btnClear, true);
 }
 
 function clearSearchResults() {
-  searchInput.value = "";
-  searchQuery = "";
-  showNews();
+  refs.searchInput.value = "";
+  params.search = "";
+  params.offset = 0;
+  refs.searchMessage.innerHTML = ""; // щось зробити з блоком, видалити чи!!!
+  toggleButton(refs.btnClear, false);
+  showNews(false, true);
 }
-//
 
 function getArticleHTML(imgUrl, title, alt) {
   return `<div class="article">
@@ -76,6 +99,9 @@ function getArticleHTML(imgUrl, title, alt) {
 
 showNews();
 
-btnLoad.addEventListener("click", onLoadMoreClick);
-btnSearch.addEventListener("click", searchNews);
-btnClear.addEventListener("click", clearSearchResults);
+refs.btnLoad.addEventListener("click", onLoadMoreClick);
+refs.btnSearch.addEventListener("click", onSearchNews);
+refs.btnClear.addEventListener("click", clearSearchResults);
+// refs.btnShowThree.addEventListener("click", onShowThree);
+// refs.btnShowNine.addEventListener("click", onShowNine);
+refs.limitSelect.addEventListener("change", onLimitChange);

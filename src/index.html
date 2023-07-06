@@ -11,14 +11,29 @@
     <header class="header">
       <h1 class="header__title">Spaceflight News</h1>
       <div class="search search--header">
-        <input type="text" class="search-input js-search-input" placeholder="Search..." />
+        <input
+          type="text"
+          class="search-input js-search-input"
+          placeholder="Search..."
+        />
         <button class="btn-search js-btn-search">Search</button>
       </div>
     </header>
-    <div class="container">
+    <main class="main">
+      <div class="options">
+        <label class="label-select" for="limit-select">Show articles:</label>
+        <select id="limit-select" class="custom-select js-limit-select">
+          <option value="3">3</option>
+          <option value="9">9</option>
+          <option value="18">18</option>
+        </select>
+      </div>
+      <div class="search-info">
+        <h3 class="search-info__message js-message"></h3>
         <button class="btn-clear js-btn-clear">Clear search results</button>
-        <div class="main js-main"></div>
-        <button class="btn-load js-btn-load">Load more...</button>
-    </div>
+      </div>
+      <div class="articles js-articles"></div>
+      <button class="btn-load js-btn-load">Load more...</button>
+    </main>
   </body>
 </html>
